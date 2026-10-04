@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub実務講座（全5回）｜50代ビジネスパーソンのファイル管理革命</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:    #0d1b2a;
+      --navy2:   #1b2f45;
+      --blue:    #1a6eb5;
+      --sky:     #3b9eda;
+      --accent:  #f0860a;
+      --gold:    #f5b942;
+      --green:   #22c55e;
+      --red:     #ef4444;
+      --bg:      #f4f7fb;
+      --card:    #ffffff;
+      --text:    #1e293b;
+      --muted:   #64748b;
+      --border:  #e2e8f0;
+      --radius:  14px;
+      --shadow:  0 4px 24px rgba(13,27,42,.10);
+      --shadow-lg: 0 8px 40px rgba(13,27,42,.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 50%, #0e3460 100%);
+      color: #fff;
+      padding: 80px 24px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(240,134,10,.2);
+      border: 1px solid var(--accent);
+      color: var(--gold);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 4px 14px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero-sub {
+      font-size: 1.05rem;
+      opacity: .75;
+      margin-bottom: 36px;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: .78rem;
+      opacity: .7;
+      margin-top: 4px;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s infinite;
+      opacity: .5;
+      font-size: .8rem;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* ── NAV TABS ── */
+    .lesson-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy);
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+    .lesson-nav-inner {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      gap: 0;
+    }
+    .lesson-nav-inner::-webkit-scrollbar { display: none; }
+    .nav-tab {
+      flex: none;
+      padding: 14px 20px;
+      color: rgba(255,255,255,.55);
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all .25s;
+      text-decoration: none;
+    }
+    .nav-tab:hover { color: #fff; background: rgba(255,255,255,.06); }
+    .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    /* ── SECTION ── */
+    section { padding: 64px 0; }
+    section:nth-child(even) { background: #eef2f8; }
+
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-label {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--blue);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 900;
+      line-height: 1.3;
+    }
+    .section-title span { color: var(--accent); }
+
+    /* ── INTRO ── */
+    .intro-box {
+      background: var(--navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 32px 36px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .intro-box::before {
+      content: '⚠️';
+      position: absolute;
+      right: 24px; top: 16px;
+      font-size: 4rem;
+      opacity: .15;
+    }
+    .intro-filename {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: .92rem;
+      color: var(--gold);
+      margin: 16px 0;
+    }
+    .intro-text { opacity: .85; line-height: 1.9; }
+
+    /* ── ROADMAP ── */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+    }
+    .roadmap-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border-top: 4px solid var(--border);
+      transition: transform .2s, box-shadow .2s;
+      cursor: default;
+    }
+    .roadmap-info { flex: 1; }
+    .roadmap-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .roadmap-card.c1 { border-top-color: #6366f1; }
+    .roadmap-card.c2 { border-top-color: #0ea5e9; }
+    .roadmap-card.c3 { border-top-color: #10b981; }
+    .roadmap-card.c4 { border-top-color: var(--accent); }
+    .roadmap-card.c5 { border-top-color: #ec4899; }
+    .roadmap-num {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .roadmap-icon { font-size: 2rem; margin-bottom: 8px; }
+    .roadmap-ttl { font-size: .88rem; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .roadmap-tag {
+      display: inline-block;
+      font-size: .68rem;
+      background: var(--bg);
+      border-radius: 50px;
+      padding: 2px 10px;
+      color: var(--muted);
+    }
+
+    /* ── LESSON CARD ── */
+    .lesson-section { scroll-margin-top: 52px; }
+    .lesson-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .lesson-num-badge {
+      flex: none;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #fff;
+    }
+    .l1 .lesson-num-badge { background: #6366f1; }
+    .l2 .lesson-num-badge { background: #0ea5e9; }
+    .l3 .lesson-num-badge { background: #10b981; }
+    .l4 .lesson-num-badge { background: var(--accent); }
+    .l5 .lesson-num-badge { background: #ec4899; }
+    .lesson-title-area { flex: 1; }
+    .lesson-episode { font-size: .75rem; font-weight: 700; letter-spacing: .1em; color: var(--muted); }
+    .lesson-title { font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-weight: 900; line-height: 1.3; }
+
+    /* goals */
+    .goals {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .goal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .goal-icon { font-size: 1.3rem; flex: none; }
+    .goal-text { font-size: .88rem; line-height: 1.5; }
+
+    /* analogy */
+    .analogy-box {
+      background: linear-gradient(135deg, #0d1b2a, #1b3a5c);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .analogy-label {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .analogy-body { opacity: .9; line-height: 2; }
+    .analogy-code {
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: 16px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      color: #a5f3fc;
+      white-space: pre;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 16px 0;
+      line-height: 1.7;
+    }
+    .tip-box {
+      display: flex;
+      gap: 12px;
+      background: rgba(245,185,66,.12);
+      border: 1px solid rgba(245,185,66,.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 16px;
+    }
+    .tip-icon { font-size: 1.2rem; flex: none; }
+    .tip-text { font-size: .88rem; opacity: .9; line-height: 1.6; }
+
+    /* steps */
+    .steps-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .steps-title::before {
+      content: '';
+      display: block;
+      width: 4px; height: 20px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+    .step {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      overflow: hidden;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: background .15s;
+    }
+    .step-header:hover { background: #f8fafc; }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex: none;
+    }
+    .step-label { font-weight: 700; font-size: .92rem; flex: 1; }
+    .step-chevron { color: var(--muted); transition: transform .25s; font-size: .8rem; }
+    .step.open .step-chevron { transform: rotate(180deg); }
+    .step-body {
+      display: none;
+      padding: 0 20px 20px 66px;
+    }
+    .step.open .step-body { display: block; }
+    .step-body ol { padding-left: 20px; }
+    .step-body li { font-size: .9rem; margin-bottom: 8px; line-height: 1.7; }
+    .step-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: .83em;
+      color: var(--blue);
+    }
+    .step-body pre {
+      background: var(--navy);
+      color: #a5f3fc;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      overflow-x: auto;
+      margin: 10px 0;
+      line-height: 1.7;
+    }
+    .step-body .comment { color: #94a3b8; }
+    .step-body .keyword { color: #f472b6; }
+    .step-body .string  { color: #86efac; }
+
+    /* benefits */
+    .benefits {
+      background: linear-gradient(135deg, #052e1a, #0a4a2a);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      color: #fff;
+      margin-bottom: 40px;
+    }
+    .benefits-title {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: .92rem;
+      line-height: 1.6;
+    }
+    .benefit-item:last-child { margin-bottom: 0; }
+    .benefit-check { color: var(--green); font-size: 1.1rem; flex: none; }
+
+    /* divider */
+    .lesson-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 48px 0;
+    }
+
+    /* ── BEFORE/AFTER ── */
+    .ba-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 600px) { .ba-grid { grid-template-columns: 1fr; } }
+    .ba-card {
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .ba-before {
+      background: #fff1f2;
+      border: 2px solid #fecdd3;
+    }
+    .ba-after {
+      background: #f0fdf4;
+      border: 2px solid #bbf7d0;
+    }
+    .ba-label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      margin-bottom: 16px;
+    }
+    .ba-before .ba-label { color: var(--red); }
+    .ba-after  .ba-label { color: #16a34a; }
+    .ba-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+    .ba-icon { flex: none; font-size: 1rem; }
+
+    /* ── GLOSSARY ── */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .glossary-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: transform .2s;
+    }
+    .glossary-card:hover { transform: translateY(-3px); }
+    .glossary-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: #eff6ff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      flex: none;
+      align-self: flex-start;
+      white-space: nowrap;
+    }
+    .glossary-def { font-size: .88rem; line-height: 1.6; }
+    .glossary-def strong { color: var(--accent); }
+
+    /* ── TOOLS ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .tool-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .tool-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .tool-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .tool-name { font-weight: 700; margin-bottom: 4px; }
+    .tool-desc { font-size: .83rem; color: var(--muted); margin-bottom: 12px; }
+    .tool-badge {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 50px;
+    }
+    .free  { background: #dcfce7; color: #16a34a; }
+    .paid  { background: #fef9c3; color: #854d0e; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 32px 20px;
+      font-size: .82rem;
+    }
+    footer a { color: var(--sky); text-decoration: none; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      background: rgba(255,255,255,.08);
+      border-radius: 50px;
+      height: 6px;
+      margin: 24px auto 0;
+      max-width: 320px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 50px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ════════════════════════════════════════
+       SCROLL ANIMATIONS
+    ════════════════════════════════════════ */
+    .anim {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .anim.visible { opacity: 1; transform: translateY(0); }
+    .anim-delay-1 { transition-delay: .08s; }
+    .anim-delay-2 { transition-delay: .16s; }
+    .anim-delay-3 { transition-delay: .24s; }
+    .anim-delay-4 { transition-delay: .32s; }
+    .anim-delay-5 { transition-delay: .40s; }
+
+    /* ════════════════════════════════════════
+       XP FLOATING WIDGET
+    ════════════════════════════════════════ */
+    #xp-widget {
+      position: fixed;
+      top: 70px;
+      right: 16px;
+      z-index: 200;
+      background: var(--navy);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 10px 14px;
+      min-width: 120px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+      text-align: center;
+      color: #fff;
+      transition: transform .2s;
+    }
+    #xp-widget:hover { transform: scale(1.04); }
+    .xp-level-badge {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--gold);
+      margin-bottom: 2px;
+    }
+    .xp-level-name {
+      font-size: .8rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .xp-bar-wrap {
+      background: rgba(255,255,255,.1);
+      border-radius: 50px;
+      height: 5px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--accent));
+      border-radius: 50px;
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .xp-count {
+      font-size: .7rem;
+      opacity: .65;
+    }
+    @media (max-width: 640px) {
+      #xp-widget {
+        top: auto;
+        bottom: 16px;
+        right: 16px;
+        padding: 8px 12px;
+        min-width: 100px;
+      }
+    }
+
+    /* ════════════════════════════════════════
+       TOAST NOTIFICATION
+    ════════════════════════════════════════ */
+    #toast-wrap {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--navy);
+      color: #fff;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: .85rem;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.12);
+      opacity: 0;
+      transform: translateY(12px) scale(.95);
+      transition: opacity .3s, transform .3s;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+    @media (max-width: 640px) {
+      .toast { font-size: .78rem; padding: 9px 16px; }
+    }
+
+    /* ════════════════════════════════════════
+       CHECKPOINT SECTION
+    ════════════════════════════════════════ */
+    .checkpoint-section {
+      background: #f8fafc;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .checkpoint-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .checkpoint-title {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .checkpoint-progress-text {
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .checkpoint-bar-wrap {
+      background: var(--border);
+      border-radius: 50px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .checkpoint-bar-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--green), #16a34a);
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+    .checkpoint-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cp-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--card);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      border: 2px solid transparent;
+      transition: all .2s;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .cp-item:hover { border-color: var(--border); box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+    .cp-item.done {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .cp-circle {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      flex: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      background: #fff;
+    }
+    .cp-item.done .cp-circle {
+      background: var(--green);
+      border-color: var(--green);
+      transform: scale(1.1);
+    }
+    .cp-text {
+      font-size: .87rem;
+      line-height: 1.4;
+      flex: 1;
+      transition: color .2s;
+    }
+    .cp-item.done .cp-text {
+      color: #16a34a;
+      text-decoration: line-through;
+      text-decoration-color: rgba(22,163,74,.4);
+    }
+    .cp-xp {
+      font-size: .7rem;
+      font-weight: 700;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity .3s;
+      white-space: nowrap;
+    }
+    .cp-item:not(.done):hover .cp-xp { opacity: 1; }
+    .lesson-complete-btn {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--green), #16a34a);
+      color: #fff;
+      font-size: .92rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      touch-action: manipulation;
+      opacity: .35;
+      transition: opacity .3s, transform .2s, box-shadow .2s;
+      pointer-events: none;
+    }
+    .lesson-complete-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lesson-complete-btn.active:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22,163,74,.4);
+    }
+    .lesson-complete-btn.done-state {
+      opacity: 1;
+      pointer-events: none;
+      background: linear-gradient(135deg, #94a3b8, #64748b);
+    }
+
+    /* ════════════════════════════════════════
+       ACHIEVEMENT SECTION
+    ════════════════════════════════════════ */
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .ach-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--border);
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .ach-card.unlocked {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #fff9eb, #fff);
+    }
+    .ach-card.unlocked::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(245,185,66,.15), transparent 70%);
+    }
+    .ach-icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      filter: grayscale(1);
+      opacity: .4;
+      transition: filter .4s, opacity .4s;
+    }
+    .ach-card.unlocked .ach-icon { filter: none; opacity: 1; }
+    .ach-name {
+      font-size: .83rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+      transition: color .3s;
+    }
+    .ach-card.unlocked .ach-name { color: var(--text); }
+    .ach-desc { font-size: .72rem; color: var(--muted); line-height: 1.4; }
+    .ach-lock {
+      font-size: .68rem;
+      color: var(--muted);
+      margin-top: 6px;
+      opacity: .6;
+    }
+    .ach-card.unlocked .ach-lock { display: none; }
+    @media (max-width: 640px) {
+      .achievement-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .ach-card { padding: 14px 10px; }
+      .ach-icon { font-size: 1.8rem; }
+      .ach-name { font-size: .78rem; }
+      .ach-desc { font-size: .68rem; }
+      .checkpoint-section { padding: 16px; }
+      .cp-item { padding: 10px 12px; }
+      .cp-text { font-size: .82rem; }
+    }
+
+    /* ════════════════════════════════════════
+       XP POPUP ANIMATION
+    ════════════════════════════════════════ */
+    @keyframes xpPop {
+      0%   { opacity:1; transform: translateY(0) scale(1); }
+      60%  { opacity:1; transform: translateY(-28px) scale(1.15); }
+      100% { opacity:0; transform: translateY(-48px) scale(.9); }
+    }
+    .xp-popup {
+      position: fixed;
+      font-size: .85rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 2px 8px rgba(0,0,0,.3);
+      pointer-events: none;
+      z-index: 9999;
+      animation: xpPop .9s ease forwards;
+    }
+
+    /* ════════════════════════════════════════
+       LESSON COMPLETION BANNER
+    ════════════════════════════════════════ */
+    .lesson-done-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #052e1a, #0a4a2a);
+      color: #fff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 12px;
+      font-size: .9rem;
+      font-weight: 600;
+    }
+    .lesson-done-banner .done-icon { font-size: 1.5rem; }
+
+    /* ════════════════════════════════════════
+       STREAK COUNTER
+    ════════════════════════════════════════ */
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #fff;
+      border-radius: 50px;
+      padding: 4px 12px;
+      font-size: .75rem;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE — tablet (≤900px)
+    ════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .roadmap {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .glossary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE — mobile (≤640px)
+    ════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      /* ── Base ── */
+      .container { padding: 0 16px; }
+      section { padding: 40px 0; }
+
+      /* ── Hero ── */
+      .hero {
+        padding: 48px 16px 72px;
+      }
+      .hero h1 {
+        font-size: 1.55rem;
+        word-break: keep-all;
+      }
+      .hero-sub {
+        font-size: .88rem;
+        line-height: 1.7;
+      }
+      .hero-stats {
+        gap: 20px;
+      }
+      .stat-num { font-size: 1.8rem; }
+
+      /* ── Nav tabs ── */
+      .nav-tab {
+        padding: 12px 14px;
+        font-size: .76rem;
+      }
+
+      /* ── Section headers ── */
+      .section-header { margin-bottom: 28px; }
+
+      /* ── Intro box ── */
+      .intro-box {
+        padding: 20px 18px;
+      }
+      .intro-box::before { display: none; }
+      .intro-filename {
+        font-size: .75rem;
+        word-break: break-all;
+        white-space: normal;
+        padding: 10px 12px;
+      }
+      .intro-text {
+        font-size: .88rem;
+        line-height: 1.8;
+      }
+      /* br tags inside intro-text hidden on mobile to avoid awkward breaks */
+      .intro-text br { display: none; }
+
+      /* ── Roadmap ── */
+      .roadmap {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .roadmap-card {
+        padding: 18px 16px;
+        display: flex;
+        align-items: center;
+        text-align: left;
+        gap: 14px;
+      }
+      .roadmap-icon {
+        font-size: 1.7rem;
+        margin-bottom: 0;
+        flex: none;
+      }
+      .roadmap-info { flex: 1; }
+      .roadmap-num { margin-bottom: 2px; }
+      .roadmap-ttl { margin-bottom: 4px; }
+
+      /* ── Goals ── */
+      .goals {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .goal-item { padding: 12px 14px; }
+
+      /* ── Lesson header ── */
+      .lesson-header {
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .lesson-num-badge {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+      }
+      .lesson-episode { font-size: .7rem; }
+      .lesson-title { font-size: 1.2rem; }
+
+      /* ── Analogy ── */
+      .analogy-box {
+        padding: 18px 16px;
+        margin-bottom: 16px;
+      }
+      .analogy-code {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: .73rem;
+        padding: 12px 12px;
+        line-height: 1.6;
+      }
+      .tip-box {
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px 14px;
+      }
+
+      /* ── Steps ── */
+      .steps { gap: 8px; margin-bottom: 20px; }
+      .step-header {
+        padding: 14px 16px;
+        gap: 10px;
+        min-height: 52px; /* touch target */
+      }
+      .step-num {
+        width: 28px;
+        height: 28px;
+        font-size: .72rem;
+      }
+      .step-label { font-size: .85rem; }
+      .step-body {
+        padding: 0 16px 16px 16px;
+      }
+      .step-body li { font-size: .85rem; margin-bottom: 10px; }
+      .step-body code {
+        font-size: .78em;
+        word-break: break-all;
+      }
+      .step-body pre {
+        font-size: .72rem;
+        padding: 10px 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ── Benefits ── */
+      .benefits {
+        padding: 18px 16px;
+        margin-bottom: 28px;
+      }
+      .benefit-item { font-size: .86rem; gap: 8px; }
+
+      /* ── Before / After ── */
+      .ba-grid { grid-template-columns: 1fr; gap: 12px; }
+      .ba-card { padding: 18px 16px; }
+      .ba-item { font-size: .84rem; }
+
+      /* ── Glossary ── */
+      .glossary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .glossary-card {
+        padding: 14px;
+        gap: 10px;
+        flex-direction: column;
+      }
+      .glossary-term {
+        white-space: normal;
+        word-break: break-all;
+        font-size: .75rem;
+      }
+      .glossary-def { font-size: .84rem; }
+
+      /* ── Tools ── */
+      .tools-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .tool-card { padding: 18px 12px; }
+      .tool-icon { font-size: 2rem; }
+      .tool-name { font-size: .88rem; }
+      .tool-desc { font-size: .76rem; }
+      .tool-badge { font-size: .68rem; padding: 2px 8px; }
+
+      /* ── Footer ── */
+      footer { padding: 24px 16px; font-size: .78rem; }
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE — very small (≤375px)
+    ════════════════════════════════════════ */
+    @media (max-width: 375px) {
+      .hero h1 { font-size: 1.35rem; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 14px; }
+      .stat-num { font-size: 1.5rem; }
+      .analogy-code { font-size: .68rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── XP WIDGET ── -->
+<div id="xp-widget">
+  <div class="xp-level-badge" id="xpLevelBadge">Lv.1</div>
+  <div class="xp-level-name" id="xpLevelName">ビギナー</div>
+  <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+  <div class="xp-count" id="xpCount">0 XP</div>
+  <div class="streak-badge" id="streakBadge">🔥 1日連続</div>
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast-wrap"></div>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-badge">🎓 初心者向け全5回講座</div>
+  <h1>GitHub で<span>ファイル管理</span>を<br>根本から変えよう</h1>
+  <p class="hero-sub">50代ビジネスパーソンのための、難しくない・怖くない・すぐ使える Git 入門</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">回の講座</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label">黒い画面（最小限）</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">「元に戻せる」安心感</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="heroProg"></div>
+  </div>
+  <div class="scroll-hint">▼ スクロールして始める</div>
+</header>
+
+<!-- ── STICKY NAV ── -->
+<nav class="lesson-nav">
+  <div class="lesson-nav-inner container">
+    <a class="nav-tab" href="#intro">はじめに</a>
+    <a class="nav-tab" href="#roadmap">全体マップ</a>
+    <a class="nav-tab" href="#l1">第1回</a>
+    <a class="nav-tab" href="#l2">第2回</a>
+    <a class="nav-tab" href="#l3">第3回</a>
+    <a class="nav-tab" href="#l4">第4回</a>
+    <a class="nav-tab" href="#l5">第5回</a>
+    <a class="nav-tab" href="#summary">まとめ</a>
+    <a class="nav-tab" href="#achievements">実績</a>
+    <a class="nav-tab" href="#glossary">用語集</a>
+  </div>
+</nav>
+
+<!-- ── INTRO ── -->
+<section id="intro">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Introduction</div>
+      <h2 class="section-title">なぜ今、<span>GitHub</span> なのか？</h2>
+    </div>
+    <div class="intro-box">
+      <p style="font-size:.8rem;opacity:.6;margin-bottom:8px;">あなたの PC の中に、こんなファイルはありませんか？</p>
+      <div class="intro-filename">📁 企画書_最新_修正版_20240419_田中確認済み_本当に最終.xlsx</div>
+      <p class="intro-text">
+        このファイル名に見覚えがあるなら、あなたはすでに <strong style="color:var(--gold)">バージョン管理の限界</strong> を体感しています。<br>
+        GitHub はその悩みを根本から解決する、<strong style="color:var(--gold)">デジタル時代の「書類管理システム」</strong>です。<br>
+        難しいコマンド操作は最小限に。まずは画面を見ながら直感的に操作することを目指します。
+      </p>
+    </div>
+    <div class="goals" style="margin-bottom:0">
+      <div class="goal-item">
+        <span class="goal-icon">⏰</span>
+        <span class="goal-text"><strong>タイムマシン機能</strong><br>過去どの時点にも1クリックで戻れる</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon">👥</span>
+        <span class="goal-text"><strong>チーム共有が劇的に楽に</strong><br>「最新版どれ？」問題がゼロになる</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon">🤖</span>
+        <span class="goal-text"><strong>AIと協力して作業</strong><br>Copilotがコードの下書きを作ってくれる</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Curriculum</div>
+      <h2 class="section-title">全5回の<span>講座マップ</span></h2>
+    </div>
+    <div class="roadmap">
+      <div class="roadmap-card c1 anim">
+        <div class="roadmap-icon">⏱️</div>
+        <div class="roadmap-info">
+          <div class="roadmap-num">第 1 回</div>
+          <div class="roadmap-ttl">タイムマシンを手に入れよう</div>
+          <div class="roadmap-tag">GitHub Desktop</div>
+        </div>
+      </div>
+      <div class="roadmap-card c2 anim anim-delay-1">
+        <div class="roadmap-icon">🧪</div>
+        <div class="roadmap-info">
+          <div class="roadmap-num">第 2 回</div>
+          <div class="roadmap-ttl">安全な実験ルームを作ろう</div>
+          <div class="roadmap-tag">ブランチ</div>
+        </div>
+      </div>
+      <div class="roadmap-card c3 anim anim-delay-2">
+        <div class="roadmap-icon">📋</div>
+        <div class="roadmap-info">
+          <div class="roadmap-num">第 3 回</div>
+          <div class="roadmap-ttl">デジタル稟議を使いこなす</div>
+          <div class="roadmap-tag">プルリクエスト</div>
+        </div>
+      </div>
+      <div class="roadmap-card c4 anim anim-delay-3">
+        <div class="roadmap-icon">🐍</div>
+        <div class="roadmap-info">
+          <div class="roadmap-num">第 4 回</div>
+          <div class="roadmap-ttl">Python × GitHub で業務自動化</div>
+          <div class="roadmap-tag">VS Code + Git</div>
+        </div>
+      </div>
+      <div class="roadmap-card c5 anim anim-delay-4">
+        <div class="roadmap-icon">🤖</div>
+        <div class="roadmap-info">
+          <div class="roadmap-num">第 5 回</div>
+          <div class="roadmap-ttl">AIと一緒に書く現代スタイル</div>
+          <div class="roadmap-tag">GitHub Copilot</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LESSON 1
+═══════════════════════════════════════ -->
+<section id="l1" class="lesson-section l1">
+  <div class="container">
+    <div class="lesson-header">
+      <div class="lesson-num-badge">1</div>
+      <div class="lesson-title-area">
+        <div class="lesson-episode">第1回 ／ GitHub Desktop 入門</div>
+        <h2 class="lesson-title">GitHubって何？<br>タイムマシンを手に入れよう</h2>
+      </div>
+    </div>
+
+    <!-- goals -->
+    <div class="goals">
+      <div class="goal-item">
+        <span class="goal-icon">🎯</span>
+        <span class="goal-text">GitHubとGitの違いが説明できる</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon">🎯</span>
+        <span class="goal-text">GitHub Desktopで最初のリポジトリを作れる</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon">🎯</span>
+        <span class="goal-text">「コミット（保存スタンプ）」の操作ができる</span>
+      </div>
+    </div>
+
+    <!-- analogy -->
+    <div class="analogy-box">
+      <div class="analogy-label">💼 ビジネスでの例え話：プロジェクト金庫と変更台帳</div>
+      <p class="analogy-body">Gitを理解するには「会社の書類管理」に例えるのが一番です。</p>
+      <div class="analogy-code">【従来の管理方法】
+📁 企画書_v1.docx
+📁 企画書_v2_山田修正.docx
+📁 企画書_v3_最終.docx
+📁 企画書_v3_最終_本当に最終.docx  ← 誰もが経験あり
+
+【GitHubを使った管理】
+📦 企画書プロジェクト（リポジトリ＝プロジェクト金庫）
+   ├── 🔖 2024/04/01 田中：初稿作成
+   ├── 🔖 2024/04/05 山田：第2章を修正
+   └── 🔖 2024/04/10 鈴木：最終確認済み</div>
+      <p class="analogy-body">
+        <strong style="color:var(--gold)">リポジトリ</strong>＝プロジェクトごとの「金庫」（すべての変更履歴が入っている）<br>
+        <strong style="color:var(--gold)">コミット</strong>＝「保存スタンプ」（いつ・誰が・何を変えたかが自動記録される）
+      </p>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text"><strong>タイムマシンのイメージ：</strong>コミットを積み重ねることで「1ヶ月前のあの時点」に1クリックで戻れます。ファイルを誤って上書きしても、もう怖くありません。</span>
+      </div>
+    </div>
+
+    <!-- steps -->
+    <div class="steps-title">具体的な操作手順</div>
+    <div class="steps">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-label">GitHub Desktop のインストール</div>
+          <div class="step-chevron">▲</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>ブラウザで <code>desktop.github.com</code> を開く</li>
+            <li>「Download for Windows」をクリックしてインストール</li>
+            <li>GitHubアカウントでサインイン（アカウントがなければ無料で作成）</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-label">最初のリポジトリを作る</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>GitHub Desktop を起動</li>
+            <li>左上の「File」→「New Repository」をクリック</li>
+            <li><strong>Name</strong>：<code>my-first-project</code>（プロジェクト名）</li>
+            <li><strong>Local Path</strong>：保存場所（例：デスクトップ）</li>
+            <li>「Create Repository」ボタンをクリック</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-label">ファイルを追加してコミットする</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>エクスプローラーで作成されたフォルダを開く</li>
+            <li>中に <code>README.txt</code> を作成し、自己紹介文を書いて保存</li>
+            <li>GitHub Desktop に戻ると、変更が自動で検出される</li>
+            <li>左下の「Summary」欄に「最初のファイルを追加」と入力</li>
+            <li>「Commit to main」ボタンをクリック → <strong>保存スタンプ完成！</strong></li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-label">変更して再度コミット</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li><code>README.txt</code> を開いて文章を書き換えて保存</li>
+            <li>GitHub Desktop で変更内容が表示される（🔴削除、🟢追加）</li>
+            <li>Summary に「自己紹介を更新」と入力してコミット</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">5</div>
+          <div class="step-label">タイムマシンを体験する（過去に戻る）</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>左側の「History」タブをクリック</li>
+            <li>コミット一覧が表示される</li>
+            <li>右クリック → 「Revert this Commit」で元に戻せることを確認</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- benefits -->
+    <div class="benefits">
+      <div class="benefits-title">🏆 この回を終えると…業務のここが楽になる</div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span><strong>ファイル名に日付やバージョンを付ける必要がなくなる</strong></span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>「誰がいつ何を変えたか」が自動的に記録される</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>誤って上書きしても、以前の状態に1クリックで戻せる</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>「最新版はどれ？」という混乱が永遠になくなる</span></div>
+    </div>
+
+    <!-- CHECKPOINT L1 -->
+    <div class="checkpoint-section anim" data-lesson="1">
+      <div class="checkpoint-header">
+        <div class="checkpoint-title">☑️ 第1回チェックポイント</div>
+        <div class="checkpoint-progress-text" data-progress="1">0 / 5 完了</div>
+      </div>
+      <div class="checkpoint-bar-wrap"><div class="checkpoint-bar-fill" data-bar="1" style="width:0%"></div></div>
+      <div class="checkpoint-list">
+        <div class="cp-item anim" data-lesson="1" data-idx="0" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">GitHub Desktop をインストールした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-1" data-lesson="1" data-idx="1" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">GitHub アカウントを作成・ログインした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-2" data-lesson="1" data-idx="2" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">最初のリポジトリを作成した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-3" data-lesson="1" data-idx="3" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">README.txt を作成してコミットした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-4" data-lesson="1" data-idx="4" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">History でコミット履歴を確認した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+      </div>
+      <button class="lesson-complete-btn" data-lesson="1" onclick="completeLesson(1)">🎉 第1回を完了する（+50 XP ボーナス）</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LESSON 2
+═══════════════════════════════════════ -->
+<section id="l2" class="lesson-section l2">
+  <div class="container">
+    <div class="lesson-header">
+      <div class="lesson-num-badge">2</div>
+      <div class="lesson-title-area">
+        <div class="lesson-episode">第2回 ／ ブランチ入門</div>
+        <h2 class="lesson-title">安全に試作する<br>「実験ルーム」を作ろう</h2>
+      </div>
+    </div>
+
+    <div class="goals">
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">ブランチの概念を理解する</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">GitHub Desktop で新しいブランチを作れる</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">試作をメインに「合流」（マージ）できる</span></div>
+    </div>
+
+    <div class="analogy-box">
+      <div class="analogy-label">🏭 ビジネスでの例え話：本番を汚さない試作場</div>
+      <p class="analogy-body">工場の生産ラインに例えてみましょう。</p>
+      <div class="analogy-code">【ブランチなしの危険な状態】
+本番ライン ─────── 実験中（失敗したら大惨事）
+
+【ブランチありの安全な状態】
+本番ライン（main）────────────────────► 完成品出荷
+                    ↘                ↗
+                     試作ライン（branch）← ここで自由に実験</div>
+      <p class="analogy-body"><strong style="color:var(--gold)">ブランチ</strong>＝本番（main）から切り離した「試作場」「下書きスペース」</p>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text"><strong>稟議書の例え：</strong>決裁済みの書類はそのまま保管しておき、修正案は「別のコピー」で作業するイメージです。OKが出たら本番に反映する。</span>
+      </div>
+    </div>
+
+    <div class="steps-title">具体的な操作手順</div>
+    <div class="steps">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-label">新しいブランチを作る</div>
+          <div class="step-chevron">▲</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>GitHub Desktop 上部の「Current Branch」をクリック</li>
+            <li>「New Branch」をクリック</li>
+            <li>名前を入力：<code>feature/new-content</code>（「試作機能」の意味）</li>
+            <li>「Create Branch」をクリック</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-label">ブランチ上で自由に編集する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li><code>README.txt</code> を開いて大きく変更（思い切り書き換えてOK！）</li>
+            <li>GitHub Desktop でコミットする</li>
+            <li>上部のブランチ名が <code>feature/new-content</code> になっていることを確認</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-label">main に戻って内容を比較する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>「Current Branch」→ <code>main</code> に切り替える</li>
+            <li><code>README.txt</code> を開くと、<strong>変更前の内容に戻っている</strong>ことを確認</li>
+            <li>ブランチを切り替えるだけで内容が変わる感覚をつかむ</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-label">ブランチを main にマージする</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>「Current Branch」で <code>main</code> を選択した状態で</li>
+            <li>上部メニュー「Branch」→「Merge into Current Branch」</li>
+            <li><code>feature/new-content</code> を選んで「Create a merge commit」</li>
+            <li><code>main</code> に変更内容が取り込まれる 🎉</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefits-title">🏆 この回を終えると…業務のここが楽になる</div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span><strong>本番ファイルを壊す心配なく自由に試せる</strong></span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>複数のアイデアを並行して試作できる</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>「やっぱり元に戻したい」がブランチを消すだけで実現</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>チームで同時並行作業が可能になる</span></div>
+    </div>
+
+    <!-- CHECKPOINT L2 -->
+    <div class="checkpoint-section anim" data-lesson="2">
+      <div class="checkpoint-header">
+        <div class="checkpoint-title">☑️ 第2回チェックポイント</div>
+        <div class="checkpoint-progress-text" data-progress="2">0 / 4 完了</div>
+      </div>
+      <div class="checkpoint-bar-wrap"><div class="checkpoint-bar-fill" data-bar="2" style="width:0%"></div></div>
+      <div class="checkpoint-list">
+        <div class="cp-item anim" data-lesson="2" data-idx="0" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">新しいブランチを作成した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-1" data-lesson="2" data-idx="1" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">ブランチ上でファイルを編集・コミットした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-2" data-lesson="2" data-idx="2" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">main に切り替えて内容が変わることを確認した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-3" data-lesson="2" data-idx="3" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">ブランチを main にマージした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+      </div>
+      <button class="lesson-complete-btn" data-lesson="2" onclick="completeLesson(2)">🎉 第2回を完了する（+50 XP ボーナス）</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LESSON 3
+═══════════════════════════════════════ -->
+<section id="l3" class="lesson-section l3">
+  <div class="container">
+    <div class="lesson-header">
+      <div class="lesson-num-badge">3</div>
+      <div class="lesson-title-area">
+        <div class="lesson-episode">第3回 ／ プルリクエスト入門</div>
+        <h2 class="lesson-title">チームに共有・<br>上司に確認を求める</h2>
+      </div>
+    </div>
+
+    <div class="goals">
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">リポジトリを GitHub.com にアップロードできる</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">プルリクエスト（PR）を作成・コメントできる</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">チームのレビューフローがわかる</span></div>
+    </div>
+
+    <div class="analogy-box">
+      <div class="analogy-label">📋 ビジネスでの例え話：デジタル稟議フロー</div>
+      <p class="analogy-body">プルリクエストは、<strong style="color:var(--gold)">デジタル版の「上司への確認依頼」</strong>です。</p>
+      <div class="analogy-code">【従来の確認フロー】
+部下：「修正版できました！」→ メールに添付 → 上司が確認 → 口頭でOK
+（どこが変わったか分かりにくい、記録も残りにくい）
+
+【GitHubのフロー】
+部下：プルリクエストを作成（変更箇所が自動でハイライト表示）
+上司：コメント欄で質問・指摘（記録がすべて残る）
+部下：修正してコミット
+上司：「Approve（承認）」ボタンを押す
+   → main ブランチに自動マージ ✅</div>
+    </div>
+
+    <div class="steps-title">具体的な操作手順</div>
+    <div class="steps">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-label">ローカルのリポジトリをクラウドに公開する</div>
+          <div class="step-chevron">▲</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>GitHub Desktop で「Publish repository」ボタンをクリック</li>
+            <li>「Keep this code private」にチェック（非公開にする場合）</li>
+            <li>「Publish Repository」をクリック</li>
+            <li>ブラウザで <code>github.com</code> を開くと、リポジトリが表示される</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-label">新しいブランチで変更し、プッシュする</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>新しいブランチを作成（例：<code>feature/update-readme</code>）</li>
+            <li>ファイルを変更してコミット</li>
+            <li>GitHub Desktop の「Push origin」ボタンをクリック（クラウドに送信）</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-label">プルリクエストを作成する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>ブラウザで GitHub を開くと「Compare &amp; pull request」ボタンが表示される</li>
+            <li>クリックして PR 作成画面へ</li>
+            <li>タイトルに変更内容を入力（例：「README に自己紹介を追加しました」）</li>
+            <li>本文に確認してほしいポイントを記入</li>
+            <li>「Create pull request」ボタンをクリック</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-label">レビューする側の操作</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>PR ページの「Files changed」タブで変更内容を確認</li>
+            <li>気になる行にカーソルを合わせると「+」ボタンが出る</li>
+            <li>クリックしてコメントを記入できる</li>
+            <li>「Review changes」→「Approve」で承認</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">5</div>
+          <div class="step-label">マージして完了</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>「Merge pull request」ボタンをクリック</li>
+            <li><code>main</code> ブランチに変更が取り込まれる 🎉</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefits-title">🏆 この回を終えると…業務のここが楽になる</div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span><strong>「どこを変えたか」が一目瞭然（差分表示）</strong></span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>確認・承認のやりとりが記録として永久に残る</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>メールの添付ファイルが不要になる</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>「あの時なぜこうしたか」を後から追跡できる</span></div>
+    </div>
+
+    <!-- CHECKPOINT L3 -->
+    <div class="checkpoint-section anim" data-lesson="3">
+      <div class="checkpoint-header">
+        <div class="checkpoint-title">☑️ 第3回チェックポイント</div>
+        <div class="checkpoint-progress-text" data-progress="3">0 / 5 完了</div>
+      </div>
+      <div class="checkpoint-bar-wrap"><div class="checkpoint-bar-fill" data-bar="3" style="width:0%"></div></div>
+      <div class="checkpoint-list">
+        <div class="cp-item anim" data-lesson="3" data-idx="0" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">リポジトリを GitHub.com に公開した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-1" data-lesson="3" data-idx="1" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">新しいブランチを作成してプッシュした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-2" data-lesson="3" data-idx="2" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">プルリクエストを作成した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-3" data-lesson="3" data-idx="3" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">コメントを付けてレビューした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-4" data-lesson="3" data-idx="4" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">マージして完了した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+      </div>
+      <button class="lesson-complete-btn" data-lesson="3" onclick="completeLesson(3)">🎉 第3回を完了する（+50 XP ボーナス）</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LESSON 4
+═══════════════════════════════════════ -->
+<section id="l4" class="lesson-section l4">
+  <div class="container">
+    <div class="lesson-header">
+      <div class="lesson-num-badge">4</div>
+      <div class="lesson-title-area">
+        <div class="lesson-episode">第4回 ／ VS Code × Python × GitHub</div>
+        <h2 class="lesson-title">Python コードを<br>GitHub で管理する</h2>
+      </div>
+    </div>
+
+    <div class="goals">
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">VS Code を使って Python ファイルを管理できる</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">VS Code 内蔵の Git 機能を使えるようになる</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">Excel 業務を自動化するコードをバージョン管理できる</span></div>
+    </div>
+
+    <div class="analogy-box">
+      <div class="analogy-label">🏭 ビジネスでの例え話：自動化レシピの保管庫</div>
+      <div class="analogy-code">📦 excel-automation（リポジトリ）
+   ├── 📄 monthly_report.py    ← 月次レポート自動生成
+   ├── 📄 data_cleaner.py      ← データ整形スクリプト
+   └── 📄 README.md            ← 使い方の説明書
+
+変更履歴：
+  🔖 2024/04 田中：月次レポートを自動化
+  🔖 2024/05 山田：商品マスタ対応を追加
+  🔖 2024/06 田中：バグ修正（消費税計算を修正）← 後から追跡可能！</div>
+    </div>
+
+    <div class="steps-title">具体的な操作手順</div>
+    <div class="steps">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-label">VS Code のセットアップ</div>
+          <div class="step-chevron">▲</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li><code>code.visualstudio.com</code> から VS Code をインストール</li>
+            <li>VS Code を起動 → 左側の「ソース管理」アイコン（分岐マーク）を確認</li>
+            <li>第1回で作ったリポジトリのフォルダを VS Code で開く</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-label">Python ファイルを作って VS Code 内でコミット</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>VS Code で新しいファイル <code>hello_excel.py</code> を作成</li>
+            <li>以下を入力して保存：</li>
+          </ol>
+          <pre><span class="keyword">import</span> openpyxl
+
+<span class="comment"># Excelファイルを作成して保存</span>
+wb = openpyxl.Workbook()
+ws = wb.active
+ws[<span class="string">'A1'</span>] = <span class="string">'GitHubで管理された自動化スクリプト'</span>
+wb.save(<span class="string">'output.xlsx'</span>)
+<span class="keyword">print</span>(<span class="string">'Excelファイルを作成しました'</span>)</pre>
+          <ol start="3">
+            <li>左の「ソース管理」アイコンをクリック</li>
+            <li>変更ファイルの右にある「＋」をクリックしてステージング</li>
+            <li>上部の入力欄にコミットメッセージを入力</li>
+            <li>チェックマーク（✔）をクリックしてコミット完了</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-label">VS Code のターミナルで実行する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>VS Code で「ターミナル」→「新しいターミナル」</li>
+            <li><code>pip install openpyxl</code> を実行（初回のみ）</li>
+            <li><code>python hello_excel.py</code> を実行</li>
+            <li><code>output.xlsx</code> が生成されることを確認</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-label">.gitignore で不要ファイルを除外する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>ルートフォルダに <code>.gitignore</code> ファイルを作成</li>
+            <li>以下を記入：</li>
+          </ol>
+          <pre>output.xlsx
+__pycache__/
+*.pyc
+.env</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefits-title">🏆 この回を終えると…業務のここが楽になる</div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span><strong>「先月のExcelマクロどこいった？」問題がゼロに</strong></span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>スクリプトの変更履歴が自動記録される</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>同僚に「共有して」と言われたら URL を渡すだけ</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>誤った修正をしてもすぐ元のバージョンに戻せる</span></div>
+    </div>
+
+    <!-- CHECKPOINT L4 -->
+    <div class="checkpoint-section anim" data-lesson="4">
+      <div class="checkpoint-header">
+        <div class="checkpoint-title">☑️ 第4回チェックポイント</div>
+        <div class="checkpoint-progress-text" data-progress="4">0 / 5 完了</div>
+      </div>
+      <div class="checkpoint-bar-wrap"><div class="checkpoint-bar-fill" data-bar="4" style="width:0%"></div></div>
+      <div class="checkpoint-list">
+        <div class="cp-item anim" data-lesson="4" data-idx="0" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">VS Code をインストールした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-1" data-lesson="4" data-idx="1" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">Python ファイルを作成・保存した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-2" data-lesson="4" data-idx="2" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">VS Code 内のソース管理でコミットした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-3" data-lesson="4" data-idx="3" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">ターミナルでスクリプトを実行した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-4" data-lesson="4" data-idx="4" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">.gitignore を作成して不要ファイルを除外した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+      </div>
+      <button class="lesson-complete-btn" data-lesson="4" onclick="completeLesson(4)">🎉 第4回を完了する（+50 XP ボーナス）</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     LESSON 5
+═══════════════════════════════════════ -->
+<section id="l5" class="lesson-section l5">
+  <div class="container">
+    <div class="lesson-header">
+      <div class="lesson-num-badge">5</div>
+      <div class="lesson-title-area">
+        <div class="lesson-episode">第5回 ／ GitHub Copilot 入門</div>
+        <h2 class="lesson-title">AI と一緒にコードを書く<br>現代の開発スタイル</h2>
+      </div>
+    </div>
+
+    <div class="goals">
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">GitHub Copilot の基本的な使い方を理解する</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">AI の提案を採用・修正しながらコードを書ける</span></div>
+      <div class="goal-item"><span class="goal-icon">🎯</span><span class="goal-text">Copilot × GitHub を使ったワークフローを身につける</span></div>
+    </div>
+
+    <div class="analogy-box">
+      <div class="analogy-label">🤖 ビジネスでの例え話：優秀な新入社員との共同作業</div>
+      <p class="analogy-body">GitHub Copilot は<strong style="color:var(--gold)">「コードを書ける優秀な新入社員」</strong>と思ってください。</p>
+      <div class="analogy-code">あなた（指示を出す人）：「月次売上をグラフ化するコードを書いて」
+Copilot（実装する人）：「こういうコードはいかがでしょう？」→ 提案を表示
+あなた：内容を確認して 採用 / 修正 / 却下</div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text"><strong>重要：</strong>AIが書いたコードを「理解して採用する」こと。丸投げではなく、<strong>あなたが意思決定者</strong>です。コードを書く量を減らし、業務課題を解くことに集中できます。</span>
+      </div>
+    </div>
+
+    <div class="steps-title">具体的な操作手順</div>
+    <div class="steps">
+      <div class="step open">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">1</div>
+          <div class="step-label">GitHub Copilot の準備</div>
+          <div class="step-chevron">▲</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li><code>github.com</code> → 右上のアイコン → 「Settings」</li>
+            <li>「GitHub Copilot」→ 有効化（まずは無料プラン「Copilot Free」で試せます）</li>
+            <li>VS Code の「拡張機能」で「GitHub Copilot」を検索してインストール</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">2</div>
+          <div class="step-label">Copilot にコードを書いてもらう</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>VS Code で新しいファイル <code>sales_report.py</code> を作成</li>
+            <li>以下のコメントを書くと、Copilot が自動的に提案を出す：</li>
+          </ol>
+          <pre><span class="comment"># Excelファイルから売上データを読み込み、月別集計をして棒グラフを作成する</span></pre>
+          <ol start="3">
+            <li><code>Tab</code> キーで提案を採用、<code>Esc</code> で却下</li>
+            <li>生成されたコードを読んで理解する（わからない部分は Copilot に聞く）</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">3</div>
+          <div class="step-label">Copilot Chat で日本語で対話する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>VS Code で <code>Ctrl + Shift + I</code>（Copilot Chat を開く）</li>
+            <li>日本語で質問できる：<br>
+              「このコードの処理内容を日本語で説明して」<br>
+              「エラーが出ています：[エラー文]。原因と修正方法を教えて」<br>
+              「もっとシンプルなコードに書き直して」
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">4</div>
+          <div class="step-label">完成したコードを GitHub に保存する</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>コードが動作したら VS Code のソース管理でコミット</li>
+            <li>コミットメッセージ例：<code>Copilot活用：月次売上グラフ生成スクリプトを追加</code></li>
+            <li>GitHub にプッシュして保存完了</li>
+          </ol>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">5</div>
+          <div class="step-label">チームへの共有フロー（総仕上げ）</div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <ol>
+            <li>ブランチを切る（<code>feature/sales-graph</code>）</li>
+            <li>Copilot と一緒にコードを書く</li>
+            <li>動作確認後、コミット＆プッシュ</li>
+            <li>プルリクエストを作成</li>
+            <li>チームがレビュー・承認</li>
+            <li>main にマージ → <strong>業務で使える！🎉</strong></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefits-title">🏆 この回を終えると…業務のここが楽になる</div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span><strong>プログラミング経験が少なくても実用的なコードが書ける</strong></span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>AIが下書きを書き、あなたが意思決定するという分業スタイル</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>コードの意味を AI に説明してもらいながら学べる</span></div>
+      <div class="benefit-item"><span class="benefit-check">✅</span><span>「コードを書く」から「業務課題を解く」に集中できる</span></div>
+    </div>
+
+    <!-- CHECKPOINT L5 -->
+    <div class="checkpoint-section anim" data-lesson="5">
+      <div class="checkpoint-header">
+        <div class="checkpoint-title">☑️ 第5回チェックポイント</div>
+        <div class="checkpoint-progress-text" data-progress="5">0 / 5 完了</div>
+      </div>
+      <div class="checkpoint-bar-wrap"><div class="checkpoint-bar-fill" data-bar="5" style="width:0%"></div></div>
+      <div class="checkpoint-list">
+        <div class="cp-item anim" data-lesson="5" data-idx="0" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">GitHub Copilot を有効化した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-1" data-lesson="5" data-idx="1" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">VS Code に Copilot 拡張機能を追加した</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-2" data-lesson="5" data-idx="2" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">コメントから Copilot の提案をもらった</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-3" data-lesson="5" data-idx="3" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">Copilot Chat で日本語質問をした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+        <div class="cp-item anim anim-delay-4" data-lesson="5" data-idx="4" onclick="toggleCP(this)">
+          <div class="cp-circle"></div>
+          <div class="cp-text">完成したコードをコミット・プッシュした</div>
+          <div class="cp-xp">+20 XP</div>
+        </div>
+      </div>
+      <button class="lesson-complete-btn" data-lesson="5" onclick="completeLesson(5)">🏆 全5回を完了する！（+50 XP ボーナス）</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── SUMMARY ── -->
+<section id="summary">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Transformation</div>
+      <h2 class="section-title">5回を終えると<span>変わること</span></h2>
+    </div>
+    <div class="ba-grid">
+      <div class="ba-card ba-before">
+        <div class="ba-label">❌ 受講前</div>
+        <div class="ba-item"><span class="ba-icon">😰</span><span>ファイル名でバージョン管理（_最新_v3_最終...）</span></div>
+        <div class="ba-item"><span class="ba-icon">😰</span><span>上書き保存が怖い、バックアップが手間</span></div>
+        <div class="ba-item"><span class="ba-icon">😰</span><span>変更点の共有がメール添付でごちゃごちゃ</span></div>
+        <div class="ba-item"><span class="ba-icon">😰</span><span>Python コードがどこにあるか分からない</span></div>
+        <div class="ba-item"><span class="ba-icon">😰</span><span>コードを書くのに時間がかかり過ぎる</span></div>
+      </div>
+      <div class="ba-card ba-after">
+        <div class="ba-label">✅ 受講後</div>
+        <div class="ba-item"><span class="ba-icon">😄</span><span>GitHub で自動的に全履歴が記録される</span></div>
+        <div class="ba-item"><span class="ba-icon">😄</span><span>いつでも元に戻せる安心感で思い切り作業できる</span></div>
+        <div class="ba-item"><span class="ba-icon">😄</span><span>プルリクエストで差分が一目瞭然・承認記録も残る</span></div>
+        <div class="ba-item"><span class="ba-icon">😄</span><span>リポジトリに整理・URL1つで共有できる</span></div>
+        <div class="ba-item"><span class="ba-icon">😄</span><span>Copilot と協力して高速開発・業務課題に集中</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACHIEVEMENTS ── -->
+<section id="achievements">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Achievements</div>
+      <h2 class="section-title">獲得した<span>実績バッジ</span></h2>
+    </div>
+    <div class="achievement-grid" id="achievementGrid">
+      <div class="ach-card anim" id="ach-first">
+        <div class="ach-icon">🌱</div>
+        <div class="ach-name">はじめの一歩</div>
+        <div class="ach-desc">最初のチェックポイントを達成</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-1" id="ach-l1">
+        <div class="ach-icon">⏱️</div>
+        <div class="ach-name">タイムトラベラー</div>
+        <div class="ach-desc">第1回を完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-2" id="ach-l2">
+        <div class="ach-icon">🧪</div>
+        <div class="ach-name">実験家</div>
+        <div class="ach-desc">第2回を完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-3" id="ach-l3">
+        <div class="ach-icon">📋</div>
+        <div class="ach-name">チームプレイヤー</div>
+        <div class="ach-desc">第3回を完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-4" id="ach-l4">
+        <div class="ach-icon">🐍</div>
+        <div class="ach-name">自動化マスター</div>
+        <div class="ach-desc">第4回を完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-5" id="ach-l5">
+        <div class="ach-icon">🤖</div>
+        <div class="ach-name">AI 協力者</div>
+        <div class="ach-desc">第5回を完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim" id="ach-all">
+        <div class="ach-icon">🏆</div>
+        <div class="ach-name">GitHub マスター</div>
+        <div class="ach-desc">全5回をすべて完了</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+      <div class="ach-card anim anim-delay-1" id="ach-streak">
+        <div class="ach-icon">🔥</div>
+        <div class="ach-name">継続は力なり</div>
+        <div class="ach-desc">3日連続で学習した</div>
+        <div class="ach-lock">🔒 未解除</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GLOSSARY ── -->
+<section id="glossary">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Glossary</div>
+      <h2 class="section-title">用語集：<span>ビジネス言葉</span>で理解する</h2>
+    </div>
+    <div class="glossary-grid">
+      <div class="glossary-card anim">
+        <span class="glossary-term">リポジトリ</span>
+        <span class="glossary-def">プロジェクトごとの<strong>「金庫」</strong>。すべての変更履歴が入っている。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">コミット</span>
+        <span class="glossary-def">変更履歴の<strong>「保存スタンプ」</strong>。いつ・誰が・何を変えたか自動記録。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">ブランチ</span>
+        <span class="glossary-def">本番を汚さない<strong>「試作場・下書きスペース」</strong>。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">マージ</span>
+        <span class="glossary-def">試作品を<strong>本番ラインに組み込む</strong>作業。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">プルリクエスト</span>
+        <span class="glossary-def">デジタル上での<strong>「確認依頼・稟議書」</strong>。コメントで記録が残る。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">クローン</span>
+        <span class="glossary-def">リモートの金庫を<strong>手元にコピー</strong>する。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">プッシュ</span>
+        <span class="glossary-def">手元の変更を<strong>クラウドに送信</strong>する（バックアップと共有を同時に）。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">プル</span>
+        <span class="glossary-def">クラウドの<strong>最新版を手元に取得</strong>する。</span>
+      </div>
+      <div class="glossary-card anim">
+        <span class="glossary-term">.gitignore</span>
+        <span class="glossary-def">管理対象外ファイルのリスト。<strong>「この書類は金庫に入れなくていい」</strong>の設定。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TOOLS ── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Tools</div>
+      <h2 class="section-title">推奨<span>ツール</span>一覧</h2>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card anim">
+        <div class="tool-icon">🖥️</div>
+        <div class="tool-name">GitHub Desktop</div>
+        <div class="tool-desc">GUI で Git を操作。黒い画面不要で直感的に使える。</div>
+        <span class="tool-badge free">完全無料</span>
+      </div>
+      <div class="tool-card anim">
+        <div class="tool-icon">💻</div>
+        <div class="tool-name">VS Code</div>
+        <div class="tool-desc">コード編集 + Git 統合。拡張機能で何でもできる。</div>
+        <span class="tool-badge free">完全無料</span>
+      </div>
+      <div class="tool-card anim">
+        <div class="tool-icon">☁️</div>
+        <div class="tool-name">GitHub.com</div>
+        <div class="tool-desc">クラウド保管・チーム共有・プルリクエストの場。</div>
+        <span class="tool-badge free">無料（基本機能）</span>
+      </div>
+      <div class="tool-card anim">
+        <div class="tool-icon">🤖</div>
+        <div class="tool-name">GitHub Copilot</div>
+        <div class="tool-desc">AI コード補完。日本語コメントから自動生成。</div>
+        <span class="tool-badge free">無料プランあり（Pro は月額$10）</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>GitHubを実務で使いこなすための初心者向け講座（全5回）</p>
+  <p style="margin-top:6px">対象：50代ビジネスパーソン（IT初心者歓迎）｜作成日：2026年4月19日</p>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════
+   DATA MODEL  (localStorage key: "ghcourse")
+   {
+     xp: number,
+     lessons: { "1": { done: bool, cp: [bool,...] }, ... },
+     achievements: [string, ...],
+     streak: { last: "YYYY-MM-DD", count: number }
+   }
+════════════════════════════════════════════ */
+
+const LESSON_CP_COUNT = { 1:5, 2:4, 3:5, 4:5, 5:5 };
+const LEVELS = [
+  { lv:1, name:'ビギナー',    min:0   },
+  { lv:2, name:'見習い',      min:100 },
+  { lv:3, name:'実践者',      min:250 },
+  { lv:4, name:'上級者',      min:450 },
+  { lv:5, name:'エキスパート', min:620 },
+  { lv:6, name:'マスター！',  min:730 },
+];
+const XP_PER_CP    = 20;
+const XP_PER_BONUS = 50;
+const XP_MAX       = 730;
+
+// ── Storage helpers ──
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('ghcourse') || 'null');
+    if (s) return s;
+  } catch(e) {}
+  return {
+    xp: 0,
+    lessons: { 1:{done:false,cp:[]}, 2:{done:false,cp:[]}, 3:{done:false,cp:[]}, 4:{done:false,cp:[]}, 5:{done:false,cp:[]} },
+    achievements: [],
+    streak: { last: '', count: 0 }
+  };
+}
+function saveState(s) {
+  localStorage.setItem('ghcourse', JSON.stringify(s));
+}
+
+let STATE = loadState();
+
+// ── Streak tracking ──
+function updateStreak() {
+  const today = new Date().toISOString().slice(0,10);
+  const { last, count } = STATE.streak;
+  if (last === today) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+  STATE.streak = {
+    last: today,
+    count: last === yesterday ? count + 1 : 1
+  };
+  saveState(STATE);
+  if (STATE.streak.count >= 3) unlockAchievement('streak');
+}
+
+// ── Level helpers ──
+function getLevel(xp) {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].min) return LEVELS[i];
+  }
+  return LEVELS[0];
+}
+function getNextLevel(xp) {
+  for (let i = 0; i < LEVELS.length - 1; i++) {
+    if (xp < LEVELS[i+1].min) return LEVELS[i+1];
+  }
+  return null;
+}
+
+// ── XP Widget ──
+function renderXPWidget() {
+  const xp  = STATE.xp;
+  const lv  = getLevel(xp);
+  const nxt = getNextLevel(xp);
+  const pct = nxt ? Math.round((xp - lv.min) / (nxt.min - lv.min) * 100) : 100;
+
+  document.getElementById('xpLevelBadge').textContent = `Lv.${lv.lv}`;
+  document.getElementById('xpLevelName').textContent  = lv.name;
+  document.getElementById('xpBarFill').style.width    = pct + '%';
+  document.getElementById('xpCount').textContent      = `${xp} / ${XP_MAX} XP`;
+
+  const sb = document.getElementById('streakBadge');
+  sb.textContent = `🔥 ${STATE.streak.count}日連続`;
+  sb.style.display = STATE.streak.count >= 1 ? 'inline-flex' : 'none';
+}
+
+// ── XP popup animation ──
+function showXPPopup(el, amount) {
+  const rect = el.getBoundingClientRect();
+  const pop  = document.createElement('div');
+  pop.className = 'xp-popup';
+  pop.textContent = `+${amount} XP`;
+  pop.style.cssText = `left:${rect.left + rect.width/2}px;top:${rect.top + window.scrollY}px;`;
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 950);
+}
+
+// ── Toast ──
+function showToast(msg, duration = 2800) {
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show'); }); });
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 350);
+  }, duration);
+}
+
+// ── Confetti ──
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9990;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const colors  = ['#f5b942','#6366f1','#22c55e','#ec4899','#3b9eda','#f0860a','#ffffff'];
+  const pieces  = Array.from({length: 160}, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * canvas.height - canvas.height,
+    w:    Math.random() * 9 + 4,
+    h:    Math.random() * 5 + 3,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speed: Math.random() * 4 + 2,
+    angle: Math.random() * Math.PI * 2,
+    spin:  (Math.random() - .5) * .25,
+    drift: (Math.random() - .5) * 2.5,
+  }));
+  let raf;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+      p.y     += p.speed;
+      p.x     += p.drift;
+      p.angle += p.spin;
+    });
+    if (pieces.some(p => p.y < canvas.height + 20)) {
+      raf = requestAnimationFrame(draw);
+    } else {
+      canvas.remove();
+    }
+  }
+  draw();
+  setTimeout(() => { cancelAnimationFrame(raf); canvas.remove(); }, 4500);
+}
+
+// ── Checkpoint toggle ──
+function toggleCP(el) {
+  const lesson = parseInt(el.dataset.lesson);
+  const idx    = parseInt(el.dataset.idx);
+  const ls     = STATE.lessons[lesson];
+  const wasOn  = ls.cp[idx] === true;
+
+  if (wasOn) {
+    ls.cp[idx] = false;
+    el.classList.remove('done');
+    el.querySelector('.cp-circle').textContent = '';
+    STATE.xp = Math.max(0, STATE.xp - XP_PER_CP);
+  } else {
+    ls.cp[idx] = true;
+    el.classList.add('done');
+    el.querySelector('.cp-circle').textContent = '✓';
+    STATE.xp += XP_PER_CP;
+    showXPPopup(el, XP_PER_CP);
+    if (!STATE.achievements.includes('first')) {
+      unlockAchievement('first');
+    }
+  }
+
+  saveState(STATE);
+  updateCheckpointUI(lesson);
+  renderXPWidget();
+}
+
+function updateCheckpointUI(lesson) {
+  const ls      = STATE.lessons[lesson];
+  const total   = LESSON_CP_COUNT[lesson];
+  const done    = (ls.cp || []).filter(Boolean).length;
+  const pct     = Math.round(done / total * 100);
+
+  const bar  = document.querySelector(`[data-bar="${lesson}"]`);
+  const txt  = document.querySelector(`[data-progress="${lesson}"]`);
+  const btn  = document.querySelector(`.lesson-complete-btn[data-lesson="${lesson}"]`);
+
+  if (bar) bar.style.width = pct + '%';
+  if (txt) txt.textContent = `${done} / ${total} 完了`;
+  if (btn) {
+    if (ls.done) {
+      btn.classList.remove('active');
+      btn.classList.add('done-state');
+      btn.textContent = '✅ 完了済み';
+    } else if (done >= total) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  }
+}
+
+// ── Lesson completion ──
+function completeLesson(lesson) {
+  const ls = STATE.lessons[lesson];
+  if (ls.done) return;
+  ls.done  = true;
+  STATE.xp += XP_PER_BONUS;
+  saveState(STATE);
+
+  updateCheckpointUI(lesson);
+  renderXPWidget();
+  launchConfetti();
+
+  const msgs = {
+    1: '🎉 第1回完了！タイムマシン、手に入れましたね！',
+    2: '🧪 第2回完了！安全な実験場をマスターしました！',
+    3: '📋 第3回完了！デジタル稟議の達人です！',
+    4: '🐍 第4回完了！Python × GitHub で業務革命！',
+    5: '🏆 全5回完了！あなたは GitHub マスターです！',
+  };
+  showToast(msgs[lesson], 4000);
+
+  const achMap = { 1:'l1', 2:'l2', 3:'l3', 4:'l4', 5:'l5' };
+  unlockAchievement(achMap[lesson]);
+
+  const allDone = [1,2,3,4,5].every(n => STATE.lessons[n].done);
+  if (allDone) {
+    setTimeout(() => { unlockAchievement('all'); showToast('🏆 GitHub マスター解除！全講座完走おめでとうございます！', 5000); }, 1200);
+  }
+
+  // Insert done banner
+  const btn = document.querySelector(`.lesson-complete-btn[data-lesson="${lesson}"]`);
+  if (btn && !btn.nextElementSibling?.classList.contains('lesson-done-banner')) {
+    const banner = document.createElement('div');
+    banner.className = 'lesson-done-banner';
+    banner.innerHTML = `<span class="done-icon">🎖️</span><span>この回の学習を完了しました。次のレッスンへ進みましょう！</span>`;
+    btn.insertAdjacentElement('afterend', banner);
+  }
+}
+
+// ── Achievement unlock ──
+function unlockAchievement(key) {
+  if (STATE.achievements.includes(key)) return;
+  STATE.achievements.push(key);
+  saveState(STATE);
+
+  const cardMap = { first:'ach-first', l1:'ach-l1', l2:'ach-l2', l3:'ach-l3', l4:'ach-l4', l5:'ach-l5', all:'ach-all', streak:'ach-streak' };
+  const card = document.getElementById(cardMap[key]);
+  if (card) {
+    card.classList.add('unlocked');
+    card.querySelector('.ach-lock').textContent = '✨ 解除！';
+  }
+
+  const names = { first:'はじめの一歩', l1:'タイムトラベラー', l2:'実験家', l3:'チームプレイヤー', l4:'自動化マスター', l5:'AI 協力者', all:'GitHub マスター', streak:'継続は力なり' };
+  if (names[key]) showToast(`🏅 実績解除：${names[key]}`, 3200);
+}
+
+// ── Accordion ──
+function toggleStep(header) {
+  const step    = header.parentElement;
+  const chevron = header.querySelector('.step-chevron');
+  const isOpen  = step.classList.contains('open');
+  step.classList.toggle('open', !isOpen);
+  chevron.textContent = isOpen ? '▼' : '▲';
+}
+
+// ── Scroll-triggered animations ──
+const animObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      animObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.anim').forEach(el => animObserver.observe(el));
+
+// ── Active nav tab on scroll ──
+const sections = document.querySelectorAll('section[id], header[id]');
+const tabs     = document.querySelectorAll('.nav-tab');
+const navObs   = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tabs.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(s => navObs.observe(s));
+
+// ── Hero progress bar ──
+window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('heroProg').style.width = '100%'; }, 400);
+});
+
+// ── Apply saved state on load ──
+function applyState() {
+  // Checkpoints
+  for (let lesson = 1; lesson <= 5; lesson++) {
+    const ls  = STATE.lessons[lesson];
+    const cps = document.querySelectorAll(`.cp-item[data-lesson="${lesson}"]`);
+    cps.forEach((el, idx) => {
+      if (ls.cp[idx]) {
+        el.classList.add('done');
+        el.querySelector('.cp-circle').textContent = '✓';
+      }
+    });
+    updateCheckpointUI(lesson);
+
+    if (ls.done) {
+      const btn = document.querySelector(`.lesson-complete-btn[data-lesson="${lesson}"]`);
+      if (btn && !btn.nextElementSibling?.classList.contains('lesson-done-banner')) {
+        const banner = document.createElement('div');
+        banner.className = 'lesson-done-banner';
+        banner.innerHTML = `<span class="done-icon">🎖️</span><span>この回の学習を完了しました。</span>`;
+        btn.insertAdjacentElement('afterend', banner);
+      }
+    }
+  }
+
+  // Achievements
+  STATE.achievements.forEach(key => {
+    const cardMap = { first:'ach-first', l1:'ach-l1', l2:'ach-l2', l3:'ach-l3', l4:'ach-l4', l5:'ach-l5', all:'ach-all', streak:'ach-streak' };
+    const card = document.getElementById(cardMap[key]);
+    if (card) {
+      card.classList.add('unlocked');
+      card.querySelector('.ach-lock').textContent = '✨ 解除！';
+    }
+  });
+
+  renderXPWidget();
+  updateStreak();
+}
+
+applyState();
+</script>
+</body>
+</html>
